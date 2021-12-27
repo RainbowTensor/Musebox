@@ -1,0 +1,27 @@
+.sequencerGrid {
+    border-radius: 5px;
+    width: fit-content;
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: fit-content;
+    margin: auto;
+}
+
+button {
+    border-radius: 5px;
+    height: 4em;
+    width: 4em;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(92, 92, 92);
+    margin: 2px;
+    outline: none;
+}
+
+.noteOn {
+    background: rgb(210, 60, 75);
+}
+
+.noteOff {
+    background: rgb(231, 225, 56);
+}

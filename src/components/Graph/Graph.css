@@ -1,0 +1,27 @@
+.Graph {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    align-items: center;
+    width: 96%;
+    background: #b198af;
+    margin-top: 2%;
+    border-radius: 4px;
+}
+
+.graphArea {
+    padding: 5%;
+}
+
+polyline {
+    stroke: rgb(155 82 82);
+    stroke-width: 3;
+    fill: rgb(155 82 82);
+    fill-opacity: 40%;
+}
+
+circle {
+    fill: rgb(177 152 175);
+    stroke: rgb(155 82 82);
+    stroke-width: 2.5px;
+}
