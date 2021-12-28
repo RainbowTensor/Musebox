@@ -8,8 +8,6 @@ class PieceService {
         const url = webApiUrl + `resources/Piece/`;
         const response = await fetch(url, options);
         const responseJson = response.json();
-
-        console.log("response", responseJson);
         return responseJson;
     };
     postPiece = async (pieceProps) => {
@@ -20,7 +18,17 @@ class PieceService {
         };
         const url = webApiUrl + `resources/Piece/`;
         const response = await fetch(url, options);
-        const responseJson = response.json();
+        return response;
+    };
+    putPiece = async (pieceProps) => {
+        const options = {
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(pieceProps),
+            method: "PUT",
+        };
+        const url = webApiUrl + `resources/Piece/${pieceProps.id}`;
+        const response = await fetch(url, options);
+        return response;
     };
 }
 

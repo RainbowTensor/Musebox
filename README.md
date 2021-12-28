@@ -8,3 +8,5 @@ Simple Sequencer made with React and Tone.js. Supports API calls to backend serv
  - [ ] Delete Piece
  - [ ] Add Bars
  - [ ] Add more Effects on Oscillator 
+
+ 

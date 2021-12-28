@@ -1,4 +1,4 @@
-.oscillatorWrapper {
+.tableWrapper {
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -6,30 +6,25 @@
     background: #00000099;
     width: 100%;
     height: 100vh;
-    top: 0;
-    left: 0;
-    z-index: 0;
+    z-index: 1;
 }
-
-.Oscillator {
+.Table {
     display: flex;
     flex-direction: column;
+    align-items: center;
     width: 26%;
     background: rgb(165 106 106);
     margin-top: 8%;
     border-radius: 5px;
+    border-collapse: collapse;
+    padding-bottom: 15px;
 }
 
-.buttonTry {
-    align-self: center;
-    width: 21%;
-    height: 8%;
-    margin: 2%;
+td,
+th {
+    padding: 8px;
 }
 
-.buttonSet {
-    align-self: center;
-    width: 21%;
-    height: 8%;
-    margin: 2%;
+td {
+    text-align: center;
 }

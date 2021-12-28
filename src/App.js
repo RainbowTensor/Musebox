@@ -15,6 +15,9 @@ class App extends React.Component {
         return (
             <div className="App">
                 <h3>start</h3>
+                {stateManager.toggleTable && (
+                    <Table stateManager={stateManager} />
+                )}
                 {stateManager.toggleOscillator && (
                     <Oscillator stateManager={stateManager} />
                 )}

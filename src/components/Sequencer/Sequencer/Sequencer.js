@@ -59,7 +59,14 @@ class Sequencer extends React.Component {
         }
     };
     saveEventHandler = (e) => {
-        this.props.stateManager.postPieceAsync();
+        console.log(this.props.stateManager.pieceId);
+        if (this.props.stateManager.pieceId) {
+            if (window.confirm("You are about to change the existing piece!")) {
+                this.props.stateManager.postPieceAsync();
+            }
+        } else {
+            this.props.stateManager.postPieceAsync();
+        }
     };
     render() {
         const stateManager = this.props.stateManager;

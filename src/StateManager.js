@@ -33,9 +33,11 @@ class StateManager {
     points = this.createPoints(this.adsr);
     sequencerStarted = false;
     sequencerPlaying = false;
-    toggleOscillator = true;
+    toggleOscillator = false;
+    toggleTable = true;
 
     allPieces = [];
+    pieceId = "";
 
     constructor() {
         makeObservable(this, {
@@ -45,7 +47,9 @@ class StateManager {
             sequencerStarted: observable,
             sequencerPlaying: observable,
             toggleOscillator: observable,
+            toggleTable: observable,
             allPieces: observable,
+            pieceId: observable,
             createPoints: action,
             claculateADSR: action,
             updatePoints: action,
@@ -53,6 +57,8 @@ class StateManager {
             toggleSequencerStarted: action,
             toggleSequencerPlaying: action,
             toggleOscillatorView: action,
+            toggleTableView: action,
+            setNotes: action,
             pointsInfo: computed,
         });
 
@@ -68,9 +74,27 @@ class StateManager {
         });
     };
     postPieceAsync = async () => {
-        const pieceProps = { adsr: this.adsr, notes: this.notes };
-        const pieceData = await this.pieceService.postPiece(pieceProps);
+        if (this.pieceId) {
+            const pieceProps = {
+                adsr: this.adsr,
+                notes: this.notes,
+                id: this.pieceId,
+            };
+            const pieceData = await this.pieceService.putPiece(pieceProps);
+        } else {
+            const pieceProps = {
+                adsr: this.adsr,
+                notes: this.notes,
+            };
+            const pieceData = await this.pieceService.postPiece(pieceProps);
+        }
     };
+    setNotes(idx) {
+        const selectedPiece = this.allPieces[idx];
+        this.adsr = selectedPiece.adsr;
+        this.notes = selectedPiece.notes;
+        this.pieceId = selectedPiece.id;
+    }
     createPoints(adsr) {
         const createObject = (x, y, draggable) => {
             //console.log("xy", x, y);
@@ -148,6 +172,9 @@ class StateManager {
     }
     toggleOscillatorView() {
         this.toggleOscillator = !this.toggleOscillator;
+    }
+    toggleTableView() {
+        this.toggleTable = !this.toggleTable;
     }
     get pointsInfo() {
         return this.points;
