@@ -8,20 +8,17 @@
 }
 
 button {
-    border-radius: 5px;
+    border-radius: 10px;
     height: 4em;
     width: 4em;
-    border-style: solid;
-    border-width: 1px;
-    border-color: rgb(92, 92, 92);
+    border-style: none;
     margin: 2px;
-    outline: none;
 }
 
 .noteOn {
-    background: rgb(210, 60, 75);
+    background: #b5446e;
 }
 
 .noteOff {
-    background: rgb(231, 225, 56);
+    background: #277da1;
 }

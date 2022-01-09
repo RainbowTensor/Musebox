@@ -9,9 +9,9 @@ class Graph extends Component {
         this.onMouseDownEventHandler = this.onMouseDownEventHandler.bind(this);
     }
     onMouseDownEventHandler(e, idx) {
-        const objState = this.props.stateManager.points[idx];
+        const objState = this.props.store.points[idx];
         if (objState.draggable) {
-            this.props.stateManager.updatePoints(
+            this.props.store.updatePoints(
                 {
                     x: null,
                     y: null,
@@ -26,12 +26,12 @@ class Graph extends Component {
     }
     onMouseMoveEventHandler(e, idx) {
         e.preventDefault();
-        const objState = this.props.stateManager.points[idx];
+        const objState = this.props.store.points[idx];
         if (objState.dragging & objState.draggable) {
             const shiftX = e.screenX - objState.screenX;
             const shiftY = e.screenY - objState.screenY;
 
-            this.props.stateManager.updatePoints(
+            this.props.store.updatePoints(
                 {
                     x: objState.x + shiftX,
                     y: objState.y + shiftY,
@@ -45,9 +45,9 @@ class Graph extends Component {
         }
     }
     onMouseUpEventHandler(e, idx) {
-        const objState = this.props.stateManager.points[idx];
+        const objState = this.props.store.points[idx];
         if (objState.draggable) {
-            this.props.stateManager.updatePoints(
+            this.props.store.updatePoints(
                 {
                     x: null,
                     y: null,
@@ -59,17 +59,17 @@ class Graph extends Component {
                 idx
             );
         }
-        this.props.stateManager.claculateADSR();
+        this.props.store.claculateADSR();
     }
     render() {
-        const stateManager = this.props.stateManager;
-        const points = stateManager.points;
+        const store = this.props.store;
+        const points = store.points;
         return (
             <div className="Graph">
                 <svg
                     className="graphArea"
-                    width={stateManager.width + stateManager.padding}
-                    height={stateManager.height + stateManager.padding}
+                    width={store.width + store.padding}
+                    height={store.height + store.padding}
                 >
                     <polyline
                         points={points.map((coords, i) => {

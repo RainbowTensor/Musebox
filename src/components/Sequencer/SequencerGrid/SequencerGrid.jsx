@@ -9,10 +9,10 @@ class SequencerGrid extends React.Component {
         this.onClickEventHandler = this.onClickEventHandler.bind(this);
     }
     onClickEventHandler(e, rowIdx, noteIdx) {
-        this.props.stateManager.updateNotes(rowIdx, noteIdx);
+        this.props.store.updateNotes(rowIdx, noteIdx);
     }
     render() {
-        const notes = this.props.stateManager.notes;
+        const notes = this.props.store.notes;
         return (
             <div className="sequencerGrid">
                 {notes.map((row, rowIdx) => {

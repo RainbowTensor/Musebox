@@ -1,8 +1,13 @@
 .App {
-    display: grid;
+    display: flex;
     justify-content: center;
+    align-items: center;
     flex-flow: column;
     height: 100%;
-    background: rgb(85, 137, 183);
+    background: #2e2f2f;
     color: white;
+}
+
+.title {
+    margin-top: -2%;
 }

@@ -1,0 +1,42 @@
+.playButton {
+    width: 11%;
+    height: 6%;
+    margin: 1% 0% 3% 0%;
+    background: #f2cb40;
+    color: #2e2f2f;
+    font-weight: 800;
+}
+
+.viewOscButton {
+    width: max-content;
+    height: 6%;
+    margin: 1% 0% 3% 0%;
+    background: #f2cb40;
+    color: #2e2f2f;
+    font-weight: 800;
+    font-size: 10px;
+    margin-left: 2%;
+}
+
+.inputWrapper {
+    display: flex;
+    justify-content: center;
+    gap: 1%;
+    margin: 2%;
+}
+
+.textInput {
+    border-radius: 9px;
+    background: none;
+    border-style: solid;
+    color: white;
+}
+
+.submit {
+    background: #f2cb40;
+    border-radius: 8px;
+    border-style: none;
+    cursor: pointer;
+    font-weight: 700;
+    color: #2e2f2f;
+}

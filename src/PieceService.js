@@ -1,32 +1,42 @@
 const webApiUrl = "https://api.baasic.com/v1/musebox/";
 
 class PieceService {
-    getAllPieces = async () => {
+    get = async (resourceName) => {
         const options = {
             method: "GET",
         };
-        const url = webApiUrl + `resources/Piece/`;
+        const url = webApiUrl + `resources/${resourceName}/`;
         const response = await fetch(url, options);
         const responseJson = response.json();
+        console.log("GET Reaponse", responseJson);
         return responseJson;
     };
-    postPiece = async (pieceProps) => {
+    post = async (resourceName, pieceProps) => {
         const options = {
             headers: { "content-type": "application/json" },
             body: JSON.stringify(pieceProps),
             method: "POST",
         };
-        const url = webApiUrl + `resources/Piece/`;
+        const url = webApiUrl + `resources/${resourceName}/`;
         const response = await fetch(url, options);
-        return response;
+        const responseJson = response.json();
+        return responseJson;
     };
-    putPiece = async (pieceProps) => {
+    put = async (resourceName, pieceProps) => {
         const options = {
             headers: { "content-type": "application/json" },
             body: JSON.stringify(pieceProps),
             method: "PUT",
         };
-        const url = webApiUrl + `resources/Piece/${pieceProps.id}`;
+        const url = webApiUrl + `resources/${resourceName}/${pieceProps.id}`;
+        const response = await fetch(url, options);
+        return response;
+    };
+    delete = async (resourceName, pieceId) => {
+        const options = {
+            method: "DELETE",
+        };
+        const url = webApiUrl + `resources/${resourceName}/${pieceId}`;
         const response = await fetch(url, options);
         return response;
     };
