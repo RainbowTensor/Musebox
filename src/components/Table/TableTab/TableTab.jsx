@@ -16,9 +16,13 @@ class TableTab extends React.Component {
         this.props.pieceStore.toggleTableView();
         this.props.oscillatorStore.toggleOscillatorView();
     };
-    deleteEventHandler = (e, pieceIdx) => {
-        console.log("clicked", pieceIdx);
-        //this.props.pieceStore.deletePieceAsync(pieceIdx);
+    deleteEventHandler = (e, idx) => {
+        if (this.props.pieceStore.pieceTab) {
+            this.props.pieceStore.deletePieceAsync(idx);
+        } else {
+            this.props.barStore.deleteBarsAsync({ barId: null, barIdx: idx });
+            this.props.barStore.deleteBarsView(idx);
+        }
     };
     filterEventHandler = (e, idx) => {
         this.props.pieceStore.filterBars(idx);

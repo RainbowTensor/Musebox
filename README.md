@@ -4,9 +4,7 @@ Simple Sequencer made with React and Tone.js. Supports API calls to backend serv
 
 ### TODO
 
- - [ ] Add View Pieces window
- - [ ] Delete Piece
- - [ ] Add Bars
- - [ ] Add more Effects on Oscillator 
-
- 
+-   [x] Add View Pieces window
+-   [x] Delete Piece
+-   [x] Add Bars
+-   [x] Add more Effects on Oscillator

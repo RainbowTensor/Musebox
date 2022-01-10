@@ -39,6 +39,7 @@ class PieceStore {
             tableView: observable,
             pieceTab: observable,
             //setPieceId:action,
+            deletePieceView: action,
             setPieceName: action,
             setPiece: action,
             setBar: action,
@@ -81,6 +82,24 @@ class PieceStore {
             console.log("POST response", response);
         });
     };
+    deletePieceAsync = async (pieceIdx) => {
+        const selectedPiece = this.allPieces[pieceIdx];
+        const { bars_ids, id, name } = selectedPiece;
+        bars_ids.forEach((barId) => {
+            this.rootStore.barStore.deleteBarsAsync({
+                barId: barId,
+                barIdx: null,
+            });
+        });
+        const response = this.pieceService.delete("Piece", id);
+        console.log("DELETE Piece Response");
+        this.deletePieceView(pieceIdx);
+    };
+    deletePieceView(pieceIdx) {
+        console.log("deleting from view", pieceIdx);
+        this.allPieces.splice(pieceIdx, 1);
+        console.log(this.allPieces);
+    }
     setPieceId(id) {
         this.id = id;
     }
@@ -90,13 +109,6 @@ class PieceStore {
     setBarIds(ids) {
         this.barsIds = ids;
     }
-    // is this in use?
-    //appendBar(idx) {
-    //    this.bars[idx] = {
-    //        notes: this.rootStore.barStore.notes,
-    //        id: this.rootStore.barStore.id,
-    //    };
-    //}
     setPiece(idx) {
         console.log(this.allPieces);
         const selectedPiece = this.allPieces[idx];

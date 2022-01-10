@@ -23,6 +23,7 @@ class BarStore {
             sequencerStarted: observable,
             sequencerPlaying: observable,
             setViewBars: action,
+            deleteBarsView: action,
             resetViewBars: action,
             updateNotes: action,
             toggleSequencerStarted: action,
@@ -43,6 +44,24 @@ class BarStore {
         const responseJson = this.pieceService.post("Bar", barProps);
         return responseJson;
     };
+    deleteBarsAsync = async ({ barId, barIdx }) => {
+        if (barId === null) {
+            barId = this.viewBars[barIdx].id;
+        }
+        console.log(barId);
+        const response = this.pieceService.delete("Bar", barId);
+        console.log("DELETE Response", response);
+    };
+    deleteBarsView(barIdx) {
+        const barId = this.viewBars[barIdx].id;
+        const allBarsIds = this.allBars.map((bar) => {
+            return bar.id;
+        });
+        const selectedBarIdx = allBarsIds.indexOf(barId);
+        this.allBars.splice(selectedBarIdx, 1);
+        this.viewBars.splice(barIdx, 1);
+        console.log(this.barIdx);
+    }
     resetViewBars() {
         this.viewBars = this.allBars;
     }
