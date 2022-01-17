@@ -4,7 +4,6 @@ import PieceService from "../PieceService";
 class BarStore {
     id = "";
     notes = [];
-    //pieceId = "";
     allBars = [];
     viewBars = [];
 
@@ -17,7 +16,6 @@ class BarStore {
         makeObservable(this, {
             id: observable,
             notes: observable,
-            //pieceId: observable,
             allBars: observable,
             viewBars: observable,
             sequencerStarted: observable,
@@ -26,6 +24,7 @@ class BarStore {
             deleteBarsView: action,
             resetViewBars: action,
             updateNotes: action,
+            sortBars: action,
             toggleSequencerStarted: action,
             toggleSequencerPlaying: action,
         });
@@ -48,9 +47,7 @@ class BarStore {
         if (barId === null) {
             barId = this.viewBars[barIdx].id;
         }
-        console.log(barId);
         const response = this.pieceService.delete("Bar", barId);
-        console.log("DELETE Response", response);
     };
     deleteBarsView(barIdx) {
         const barId = this.viewBars[barIdx].id;
@@ -60,7 +57,19 @@ class BarStore {
         const selectedBarIdx = allBarsIds.indexOf(barId);
         this.allBars.splice(selectedBarIdx, 1);
         this.viewBars.splice(barIdx, 1);
-        console.log(this.barIdx);
+    }
+    sortBars() {
+        const compare = (a, b) => {
+            if (a.id < b.id) {
+                return -1;
+            }
+            if (a.id > b.id) {
+                return 1;
+            }
+            return 0;
+        };
+        const sortedBars = this.viewBars.sort(compare);
+        this.viewBars = sortedBars;
     }
     resetViewBars() {
         this.viewBars = this.allBars;

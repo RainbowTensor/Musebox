@@ -1,4 +1,6 @@
 import { makeObservable, observable, action, autorun, runInAction } from "mobx";
+import * as Tone from "tone";
+
 import PieceService from "../PieceService";
 
 const NOTES = ["F4", "Eb4", "C4", "Bb3", "Ab3", "F3"];
@@ -24,7 +26,9 @@ class PieceStore {
     activeBarIdx = 0;
     allPieces = [];
     tableView = true;
+    popupView = false;
     pieceTab = true;
+    deleteIdx = 0;
 
     rootStore;
 
@@ -37,21 +41,27 @@ class PieceStore {
             activeBarIdx: observable,
             allPieces: observable,
             tableView: observable,
+            popupView: observable,
             pieceTab: observable,
-            //setPieceId:action,
+            deleteIdx: observable,
+            setPieceId: action,
             deletePieceView: action,
+            sortPieces: action,
             setPieceName: action,
             setPiece: action,
             setBar: action,
-            //appendBar: action,
+            setPieceById: action,
+            reset: action,
             changeActiveBar: action,
+            deletePieceAndBars: action,
             toggleTableView: action,
+            showPopup: action,
+            setDeleteIdx: action,
             toggleTabs: action,
         });
-        autorun(this.logBars);
+
         this.rootStore = rootStore;
         this.pieceService = new PieceService();
-
         this.rootStore.barStore.notes = this.bars[this.activeBarIdx];
     }
     getPiecesAsync = async () => {
@@ -59,6 +69,7 @@ class PieceStore {
         runInAction(() => {
             this.allPieces = pieces.item;
         });
+        //this.rootStore.barStore.getBarsAsync();
     };
     postPieceAsync = async () => {
         const range = [...Array(this.bars.length).keys()];
@@ -79,7 +90,6 @@ class PieceStore {
                 bars_ids: this.barsIds,
             };
             const response = await this.pieceService.post("Piece", pieceProps);
-            console.log("POST response", response);
         });
     };
     deletePieceAsync = async (pieceIdx) => {
@@ -92,13 +102,23 @@ class PieceStore {
             });
         });
         const response = this.pieceService.delete("Piece", id);
-        console.log("DELETE Piece Response");
         this.deletePieceView(pieceIdx);
     };
+    deletePieceAndBars() {
+        //if (this.popupConfirm) {
+        if (this.pieceTab) {
+            this.deletePieceAsync(this.deleteIdx);
+        } else {
+            this.rootStore.barStore.deleteBarsAsync({
+                barId: null,
+                barIdx: this.deleteIdx,
+            });
+            this.rootStore.barStore.deleteBarsView(this.deleteIdx);
+        }
+        //}
+    }
     deletePieceView(pieceIdx) {
-        console.log("deleting from view", pieceIdx);
         this.allPieces.splice(pieceIdx, 1);
-        console.log(this.allPieces);
     }
     setPieceId(id) {
         this.id = id;
@@ -109,12 +129,23 @@ class PieceStore {
     setBarIds(ids) {
         this.barsIds = ids;
     }
+    resetPieceId() {
+        this.id = "";
+    }
     setPiece(idx) {
-        console.log(this.allPieces);
         const selectedPiece = this.allPieces[idx];
+        this.setPieceAttributes(selectedPiece);
+    }
+    setPieceById(pieceId) {
+        const selectedPiece = this.allPieces.filter(
+            (piece) => piece.id === pieceId
+        );
+        this.setPieceAttributes(selectedPiece[0]);
+    }
+    setPieceAttributes(selectedPiece) {
         const { bars_ids, id, name } = selectedPiece;
 
-        this.setBarIds(id);
+        this.setPieceId(id);
         this.setPieceName(name);
         this.setBarIds(bars_ids);
 
@@ -129,7 +160,7 @@ class PieceStore {
     }
     filterBars(idx) {
         const selectedPiece = this.allPieces[idx];
-        const { bars_ids, id, name } = selectedPiece;
+        const bars_ids = selectedPiece.bars_ids;
         const allBars = this.rootStore.barStore.allBars;
 
         const filteredBars = allBars.filter((bar) => bars_ids.includes(bar.id));
@@ -137,10 +168,26 @@ class PieceStore {
         this.rootStore.barStore.setViewBars(filteredBars);
     }
     setBar(idx) {
-        const selectedBar = this.rootStore.barStore.allBars[idx];
+        const selectedBar = this.rootStore.barStore.viewBars[idx];
         const { id, notes } = selectedBar;
         this.bars[0] = notes;
         this.changeActiveBar(0);
+    }
+    sortPieces() {
+        const compare = (a, b) => {
+            if (a.name < b.name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        };
+        const sortedPieces = this.allPieces.sort(compare);
+        this.allPieces = sortedPieces;
+    }
+    setDeleteIdx(idx) {
+        this.deleteIdx = idx;
     }
     changeActiveBar(idx) {
         this.activeBarIdx = idx;
@@ -152,12 +199,33 @@ class PieceStore {
     toggleTabs() {
         this.pieceTab = !this.pieceTab;
     }
+    showPopup() {
+        this.popupView = !this.popupView;
+    }
+    transportStart() {
+        Tone.Transport.start();
+    }
+    transportStop() {
+        Tone.Transport.stop();
+        Tone.Transport.cancel();
+    }
+    toneStart() {
+        Tone.start();
+    }
     get getBars() {
         return this.bars;
     }
     logBars = () => {
         console.log("piece Bars", this.getBars);
     };
+    reset() {
+        this.id = "";
+        this.name = "";
+        this.bars = new Array(4).fill(makeGrid(NOTES));
+        this.barsIds = [];
+        this.activeBarIdx = 0;
+        this.changeActiveBar(0);
+    }
 }
 
 export default PieceStore;

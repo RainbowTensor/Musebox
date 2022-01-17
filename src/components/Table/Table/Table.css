@@ -10,20 +10,15 @@
     z-index: 1;
 }
 
-.Tabs {
-    overflow: hidden;
-}
-
 .Tab {
-    height: 2em;
     background: #a56a6a;
     color: white;
-    float: left;
-    border: none;
+    border-radius: 5px;
     cursor: pointer;
     border-bottom-left-radius: unset;
     border-bottom-right-radius: unset;
-    margin: 0;
+    padding: 3% 10%;
+    text-decoration: auto;
 }
 
 #active {

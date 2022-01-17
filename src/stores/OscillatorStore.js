@@ -12,8 +12,17 @@ class OscillatorStore {
     selectedWave = "sine";
     waveType = "sine1";
     numPartials = 1;
-    synths = [];
+    synths = this.makeSynths(6);
     distortionAmount = 0;
+
+    dist = new Tone.Distortion(this.distortionAmount).toDestination();
+    synth = new Tone.Synth({
+        oscillator: {
+            type: this.waveType,
+        },
+        envelope: this.adsr,
+        volume: -10,
+    }).connect(this.dist);
 
     constructor() {
         makeObservable(this, {
@@ -27,19 +36,20 @@ class OscillatorStore {
             synths: observable,
             distortionAmount: observable,
             createPoints: action,
-            claculateADSR: action,
+            calculateADSR: action,
             updatePoints: action,
             makeSynths: action,
+            setSythParams: action,
             setPartials: action,
             setSelectedWave: action,
             setWaveType: action,
             setDistortionAmount: action,
-            toggleOscillatorView: action,
+            triggerAttack: action,
+            triggerRelease: action,
         });
     }
     createPoints(adsr) {
         const createObject = (x, y, draggable) => {
-            //console.log("xy", x, y);
             return {
                 x: x,
                 y: y,
@@ -77,7 +87,7 @@ class OscillatorStore {
 
         return points;
     }
-    claculateADSR() {
+    calculateADSR() {
         const points = this.points;
         const attack = points[1].x / this.width;
         const decay = points[2].x / this.width;
@@ -88,6 +98,14 @@ class OscillatorStore {
             decay: decay,
             sustain: sustain,
             release: release,
+        };
+    }
+    calculateShift(e, idx) {
+        const shiftX = e.screenX - this.points[idx].screenX;
+        const shiftY = e.screenY - this.points[idx].screenY;
+        return {
+            shiftX: shiftX,
+            shiftY: shiftY,
         };
     }
     updatePoints(newValues, idx) {
@@ -105,19 +123,20 @@ class OscillatorStore {
     makeSynths(count) {
         const synths = [];
         const dist = new Tone.Distortion(this.distortionAmount).toDestination();
-        const limiter = new Tone.Limiter(-5).toDestination();
+        const volume = new Tone.Volume(-30);
 
         for (let i = 0; i < count; i++) {
-            let synth = new Tone.FMSynth({
+            let synth = new Tone.Synth({
                 oscillator: {
                     type: this.waveType,
                 },
                 envelope: this.adsr,
                 volume: -10,
-            }).connect(dist, limiter); //.toDestination();
+            }).chain(dist, volume, Tone.Destination);
             synths.push(synth);
         }
         this.synths = synths;
+        return synths;
     }
     createLoop(notes) {
         const synths = this.synths;
@@ -135,21 +154,41 @@ class OscillatorStore {
             beat = (beat + 1) % 8;
         }, "8n");
     }
+    setSythParams(params) {
+        this.synth.set(params);
+    }
     setPartials(num) {
         this.numPartials = num;
-        this.setWaveType();
+        this.setWaveType(num);
+        this.setSythParams({
+            oscillator: {
+                type: this.waveType,
+            },
+        });
     }
     setSelectedWave(idx) {
         this.selectedWave = this.waveForms[idx];
-    }
-    setWaveType() {
         this.waveType = `${this.selectedWave}${this.numPartials}`;
+        this.setSythParams({
+            oscillator: {
+                type: this.waveType,
+            },
+        });
+    }
+    setWaveType(num) {
+        this.waveType = `${this.selectedWave}${num}`;
     }
     setDistortionAmount(amount) {
         this.distortionAmount = amount;
+        this.dist.set({
+            distortion: amount,
+        });
     }
-    toggleOscillatorView() {
-        this.toggleOscillator = !this.toggleOscillator;
+    triggerAttack(note) {
+        this.synth.triggerAttack(note);
+    }
+    triggerRelease() {
+        this.synth.triggerRelease();
     }
 }
 

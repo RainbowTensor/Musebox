@@ -28,9 +28,7 @@ class Graph extends Component {
         e.preventDefault();
         const objState = this.props.store.points[idx];
         if (objState.dragging & objState.draggable) {
-            const shiftX = e.screenX - objState.screenX;
-            const shiftY = e.screenY - objState.screenY;
-
+            const { shiftX, shiftY } = this.props.store.calculateShift(e, idx);
             this.props.store.updatePoints(
                 {
                     x: objState.x + shiftX,
@@ -59,7 +57,7 @@ class Graph extends Component {
                 idx
             );
         }
-        this.props.store.claculateADSR();
+        this.props.store.calculateADSR();
     }
     render() {
         const store = this.props.store;

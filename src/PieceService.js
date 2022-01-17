@@ -8,7 +8,6 @@ class PieceService {
         const url = webApiUrl + `resources/${resourceName}/`;
         const response = await fetch(url, options);
         const responseJson = response.json();
-        console.log("GET Reaponse", responseJson);
         return responseJson;
     };
     post = async (resourceName, pieceProps) => {

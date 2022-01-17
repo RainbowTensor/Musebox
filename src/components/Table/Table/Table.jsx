@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { observer } from "mobx-react";
 import TableTab from "../TableTab/TableTab";
+import Popup from "../../Popup/Popup";
 import "./Table.css";
 
 class Table extends React.Component {
@@ -11,31 +13,55 @@ class Table extends React.Component {
     onClickEventHandler = (e) => {
         this.props.pieceStore.toggleTabs();
     };
+    confirmEventHandler = (e) => {
+        this.props.pieceStore.showPopup();
+        this.props.pieceStore.deletePieceAndBars();
+    };
+    declineEventHandler = (e) => {
+        this.props.pieceStore.showPopup();
+    };
     render() {
         const pieceTab = this.props.pieceStore.pieceTab;
         return (
             <div className="tableWrapper">
                 <div className="Tabs">
-                    <button
+                    <Link
+                        to="/list/piece"
                         className="Tab"
                         id={pieceTab ? "" : "active"}
                         onClick={this.onClickEventHandler}
                     >
                         Piece
-                    </button>
-                    <button
+                    </Link>
+                    <Link
+                        to="/list/bar"
                         className="Tab"
                         id={pieceTab ? "active" : ""}
                         onClick={this.onClickEventHandler}
                     >
                         Bars
-                    </button>
+                    </Link>
                 </div>
                 <TableTab
                     pieceStore={this.props.pieceStore}
                     barStore={this.props.barStore}
                     oscillatorStore={this.props.oscillatorStore}
                 />
+                {this.props.pieceStore.popupView && (
+                    <Popup>
+                        {this.props.pieceStore.pieceTab
+                            ? "You are about to delete Piece and all of its Bars. Do you wish to proceed?"
+                            : "You are about to delete a Bar. Do you wish to proceed?"}
+                        <div>
+                            <button onClick={this.confirmEventHandler}>
+                                Yes
+                            </button>
+                            <button onClick={this.declineEventHandler}>
+                                No
+                            </button>
+                        </div>
+                    </Popup>
+                )}
             </div>
         );
     }
