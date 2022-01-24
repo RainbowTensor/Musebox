@@ -1,13 +1,11 @@
 .tableWrapper {
     display: flex;
     flex-direction: column;
-    position: fixed;
-    padding-top: 13%;
+    padding-top: 10%;
     align-items: center;
-    background: #00000099;
     width: 100%;
     height: 100vh;
-    z-index: 1;
+    overflow: hidden;
 }
 
 .Tab {

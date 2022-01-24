@@ -9,20 +9,13 @@ function Oscillator({ oscillatorStore, pieceStore }) {
     const navigate = useNavigate();
 
     const onMouseDownEventHandler = (e) => {
-        oscillatorStore.setSythParams({
-            envelope: oscillatorStore.adsr,
-            oscillator: {
-                type: oscillatorStore.waveType,
-            },
-        });
-        oscillatorStore.triggerAttack("C4");
+        oscillatorStore.onMouseDownEventHandler();
     };
     const onMouseUpEventHandler = (e) => {
         oscillatorStore.triggerRelease();
     };
     const setButtonEventHandler = (e) => {
-        oscillatorStore.calculateADSR();
-        oscillatorStore.makeSynths(6);
+        oscillatorStore.setButtonEventHandler();
         navigate(`/edit/${pieceStore.id}`);
     };
     const partialsSliderEventHandler = (e) => {

@@ -1,13 +1,25 @@
-.Bars {
+.barsWrapper {
     display: flex;
+    flex-direction: column;
     width: 100%;
-    justify-content: center;
+    gap: 25%;
 }
 
-.Bars button {
+.barsWrapper button {
     width: 7%;
     height: 100%;
     border-radius: 10px;
+}
+
+.Bars {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.playUpload {
+    display: flex;
+    justify-content: center;
 }
 
 .barOn {
@@ -18,8 +30,18 @@
     background: #f2cb40;
 }
 
+#addButton {
+    width: fit-content;
+}
+
 .uploadButton {
     background: #277da1;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.playPieceButton {
+    background: #f2cb40;
     font-weight: 600;
     cursor: pointer;
 }

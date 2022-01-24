@@ -22,13 +22,11 @@ function TableTab({ pieceStore, barStore, oscillatorStore }) {
             pieceStore.reset();
             pieceStore.setBar(idx);
         }
-        navigate("/oscillator");
+        navigate(`/edit/${pieceStore.id}`);
     };
     const newPieceEventHandler = (e) => {
-        if (pieceStore.id) {
-            pieceStore.reset();
-        }
-        navigate("/oscillator");
+        pieceStore.reset();
+        navigate("/edit/");
     };
     const deleteEventHandler = (e, idx) => {
         pieceStore.setDeleteIdx(idx);

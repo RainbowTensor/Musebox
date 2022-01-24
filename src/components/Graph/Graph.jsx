@@ -4,61 +4,15 @@ import { observer } from "mobx-react";
 import "./Graph.css";
 
 class Graph extends Component {
-    constructor(props) {
-        super(props);
-        this.onMouseDownEventHandler = this.onMouseDownEventHandler.bind(this);
-    }
-    onMouseDownEventHandler(e, idx) {
-        const objState = this.props.store.points[idx];
-        if (objState.draggable) {
-            this.props.store.updatePoints(
-                {
-                    x: null,
-                    y: null,
-                    draggable: null,
-                    dragging: true,
-                    screenX: e.screenX,
-                    screenY: e.screenY,
-                },
-                idx
-            );
-        }
-    }
-    onMouseMoveEventHandler(e, idx) {
-        e.preventDefault();
-        const objState = this.props.store.points[idx];
-        if (objState.dragging & objState.draggable) {
-            const { shiftX, shiftY } = this.props.store.calculateShift(e, idx);
-            this.props.store.updatePoints(
-                {
-                    x: objState.x + shiftX,
-                    y: objState.y + shiftY,
-                    draggable: null,
-                    dragging: null,
-                    screenX: e.screenX,
-                    screenY: e.screenY,
-                },
-                idx
-            );
-        }
-    }
-    onMouseUpEventHandler(e, idx) {
-        const objState = this.props.store.points[idx];
-        if (objState.draggable) {
-            this.props.store.updatePoints(
-                {
-                    x: null,
-                    y: null,
-                    draggable: null,
-                    dragging: false,
-                    screenX: 0,
-                    screenY: 0,
-                },
-                idx
-            );
-        }
-        this.props.store.calculateADSR();
-    }
+    onMouseDownEventHandler = (e, idx) => {
+        this.props.store.startMovePoint(e, idx);
+    };
+    onMouseMoveEventHandler = (e, idx) => {
+        this.props.store.movePoint(e, idx);
+    };
+    onMouseUpEventHandler = (e, idx) => {
+        this.props.store.stopMovePoint(idx);
+    };
     render() {
         const store = this.props.store;
         const points = store.points;

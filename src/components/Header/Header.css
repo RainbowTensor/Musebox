@@ -1,0 +1,15 @@
+.headerWrapper {
+    position: fixed;
+    display: flex;
+    justify-content: space-evenly;
+    width: 20%;
+    margin-bottom: 2%;
+    bottom: 90%;
+}
+
+.headerWrapper a {
+    color: white;
+    text-decoration: unset;
+    font-weight: 500;
+    font-size: 14px;
+}

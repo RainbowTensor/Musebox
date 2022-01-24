@@ -1,21 +1,19 @@
 .playButton {
-    width: 11%;
-    height: 6%;
-    margin: 1% 0% 3% 0%;
     background: #f2cb40;
     color: #2e2f2f;
-    font-weight: 800;
 }
 
 .viewButton {
-    width: max-content;
-    height: 6%;
-    margin: 1% 0% 3% 0%;
     background: #f2cb40;
     color: #2e2f2f;
-    font-weight: 800;
     font-size: 10px;
-    margin-left: 2%;
+}
+
+.sequencerButtonsWrappers button {
+    height: 4vh;
+    width: max-content;
+    margin: 1% 1% 2% 1%;
+    font-weight: 800;
 }
 
 .inputWrapper {

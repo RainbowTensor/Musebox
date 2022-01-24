@@ -1,4 +1,5 @@
 import { makeObservable, observable, action, runInAction } from "mobx";
+import * as Tone from "tone";
 import PieceService from "../PieceService";
 
 class BarStore {
@@ -24,6 +25,7 @@ class BarStore {
             deleteBarsView: action,
             resetViewBars: action,
             updateNotes: action,
+            togglePlay: action,
             sortBars: action,
             toggleSequencerStarted: action,
             toggleSequencerPlaying: action,
@@ -70,6 +72,26 @@ class BarStore {
         };
         const sortedBars = this.viewBars.sort(compare);
         this.viewBars = sortedBars;
+    }
+    togglePlay() {
+        // add to bar store
+        const started = this.sequencerStarted;
+        const playing = this.sequencerPlaying;
+
+        if (!started) {
+            Tone.start();
+            this.rootStore.oscillatorStore.createLoop(this.notes);
+            this.toggleSequencerStarted();
+        }
+        if (!playing) {
+            Tone.Transport.start();
+            this.toggleSequencerPlaying();
+        } else {
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+            this.toggleSequencerPlaying();
+            this.toggleSequencerStarted();
+        }
     }
     resetViewBars() {
         this.viewBars = this.allBars;

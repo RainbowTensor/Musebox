@@ -1,4 +1,4 @@
-import { makeObservable, observable, action, autorun, runInAction } from "mobx";
+import { makeObservable, observable, action, runInAction } from "mobx";
 import * as Tone from "tone";
 
 import PieceService from "../PieceService";
@@ -21,16 +21,14 @@ const makeGrid = (notes) => {
 class PieceStore {
     id = "";
     name = "";
-    bars = new Array(4).fill(makeGrid(NOTES));
+    bars = new Array(1).fill(makeGrid(NOTES));
     barsIds = [];
     activeBarIdx = 0;
     allPieces = [];
-    tableView = true;
     popupView = false;
     pieceTab = true;
+    piecePlaying = false;
     deleteIdx = 0;
-
-    rootStore;
 
     constructor(rootStore) {
         makeObservable(this, {
@@ -40,9 +38,9 @@ class PieceStore {
             barsIds: observable,
             activeBarIdx: observable,
             allPieces: observable,
-            tableView: observable,
             popupView: observable,
             pieceTab: observable,
+            piecePlaying: observable,
             deleteIdx: observable,
             setPieceId: action,
             deletePieceView: action,
@@ -51,10 +49,13 @@ class PieceStore {
             setPiece: action,
             setBar: action,
             setPieceById: action,
+            addBar: action,
+            deleteBar: action,
             reset: action,
             changeActiveBar: action,
             deletePieceAndBars: action,
-            toggleTableView: action,
+            playPiece: action,
+            togglePiecePlay: action,
             showPopup: action,
             setDeleteIdx: action,
             toggleTabs: action,
@@ -169,7 +170,7 @@ class PieceStore {
     }
     setBar(idx) {
         const selectedBar = this.rootStore.barStore.viewBars[idx];
-        const { id, notes } = selectedBar;
+        const notes = selectedBar.notes;
         this.bars[0] = notes;
         this.changeActiveBar(0);
     }
@@ -186,6 +187,16 @@ class PieceStore {
         const sortedPieces = this.allPieces.sort(compare);
         this.allPieces = sortedPieces;
     }
+    addBar() {
+        this.bars.push(makeGrid(NOTES));
+        this.changeActiveBar(this.bars.length - 1);
+    }
+    deleteBar(idx) {
+        if (this.bars.length !== 1) {
+            this.bars.splice(idx, 1);
+            this.changeActiveBar(Math.max(0, idx - 1));
+        }
+    }
     setDeleteIdx(idx) {
         this.deleteIdx = idx;
     }
@@ -193,24 +204,61 @@ class PieceStore {
         this.activeBarIdx = idx;
         this.rootStore.barStore.notes = this.bars[this.activeBarIdx];
     }
-    toggleTableView() {
-        this.tableView = !this.tableView;
-    }
     toggleTabs() {
         this.pieceTab = !this.pieceTab;
     }
     showPopup() {
         this.popupView = !this.popupView;
     }
-    transportStart() {
-        Tone.Transport.start();
+    playPiece() {
+        let notesList = new Array(8 * this.bars.length);
+        let i = 0;
+        this.bars.forEach((notes, barIdx) => {
+            for (let beat = 0; beat < 8; beat++) {
+                let notesAtBeat = [];
+                notes.forEach((row, rowIdx) => {
+                    const note = row[beat];
+                    note.active && notesAtBeat.push(note.note);
+                });
+                if (notesAtBeat.length > 1) {
+                    notesList[i] = notesAtBeat;
+                } else if (notesAtBeat.length === 1) {
+                    notesList[i] = notesAtBeat[0];
+                }
+                i++;
+            }
+        });
+        const polySynth = new Tone.PolySynth();
+        const dist = new Tone.Distortion(
+            this.rootStore.oscillatorStore.distortionAmount
+        );
+        const volume = new Tone.Volume(-5);
+        polySynth.chain(dist, volume, Tone.Destination);
+
+        const synthParams = this.rootStore.oscillatorStore.synth.get();
+        polySynth.set(synthParams);
+
+        let beat = 0;
+        const loop = new Tone.Loop((time) => {
+            const notes = notesList[beat];
+            polySynth.triggerAttackRelease(notes, "8n", time);
+
+            beat % 8 === 0 && this.changeActiveBar(beat / 8);
+
+            beat = (beat + 1) % notesList.length;
+        }, "8n").start();
+
+        if (!this.piecePlaying) {
+            Tone.Transport.start();
+            this.togglePiecePlay();
+        } else {
+            Tone.Transport.stop();
+            Tone.Transport.cancel();
+            this.togglePiecePlay();
+        }
     }
-    transportStop() {
-        Tone.Transport.stop();
-        Tone.Transport.cancel();
-    }
-    toneStart() {
-        Tone.start();
+    togglePiecePlay() {
+        this.piecePlaying = !this.piecePlaying;
     }
     get getBars() {
         return this.bars;
@@ -221,7 +269,7 @@ class PieceStore {
     reset() {
         this.id = "";
         this.name = "";
-        this.bars = new Array(4).fill(makeGrid(NOTES));
+        this.bars = new Array(1).fill(makeGrid(NOTES));
         this.barsIds = [];
         this.activeBarIdx = 0;
         this.changeActiveBar(0);

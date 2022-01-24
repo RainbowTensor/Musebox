@@ -13,7 +13,7 @@ class OscillatorStore {
     waveType = "sine1";
     numPartials = 1;
     synths = this.makeSynths(6);
-    distortionAmount = 0;
+    distortionAmount = 0.0;
 
     dist = new Tone.Distortion(this.distortionAmount).toDestination();
     synth = new Tone.Synth({
@@ -24,7 +24,7 @@ class OscillatorStore {
         volume: -10,
     }).connect(this.dist);
 
-    constructor() {
+    constructor(rootStore) {
         makeObservable(this, {
             adsr: observable,
             points: observable,
@@ -39,14 +39,13 @@ class OscillatorStore {
             calculateADSR: action,
             updatePoints: action,
             makeSynths: action,
-            setSythParams: action,
             setPartials: action,
             setSelectedWave: action,
             setWaveType: action,
             setDistortionAmount: action,
-            triggerAttack: action,
             triggerRelease: action,
         });
+        this.rootStore = rootStore;
     }
     createPoints(adsr) {
         const createObject = (x, y, draggable) => {
@@ -100,14 +99,6 @@ class OscillatorStore {
             release: release,
         };
     }
-    calculateShift(e, idx) {
-        const shiftX = e.screenX - this.points[idx].screenX;
-        const shiftY = e.screenY - this.points[idx].screenY;
-        return {
-            shiftX: shiftX,
-            shiftY: shiftY,
-        };
-    }
     updatePoints(newValues, idx) {
         const { x, y, draggable, dragging, screenX, screenY } = newValues;
         this.points[idx] = {
@@ -120,10 +111,61 @@ class OscillatorStore {
             screenY: screenY !== null ? screenY : this.points[idx].screenY,
         };
     }
+    startMovePoint(e, idx) {
+        const point = this.points[idx];
+        if (point.draggable) {
+            this.updatePoints(
+                {
+                    x: null,
+                    y: null,
+                    draggable: null,
+                    dragging: true,
+                    screenX: e.screenX,
+                    screenY: e.screenY,
+                },
+                idx
+            );
+        }
+    }
+    movePoint(e, idx) {
+        const point = this.points[idx];
+        if (point.dragging & point.draggable) {
+            const shiftX = e.screenX - point.screenX;
+            const shiftY = e.screenY - point.screenY;
+            this.updatePoints(
+                {
+                    x: point.x + shiftX,
+                    y: point.y + shiftY,
+                    draggable: null,
+                    dragging: null,
+                    screenX: e.screenX,
+                    screenY: e.screenY,
+                },
+                idx
+            );
+        }
+    }
+    stopMovePoint(idx) {
+        const point = this.points[idx];
+        if (point.draggable) {
+            this.updatePoints(
+                {
+                    x: null,
+                    y: null,
+                    draggable: null,
+                    dragging: false,
+                    screenX: 0,
+                    screenY: 0,
+                },
+                idx
+            );
+        }
+        this.calculateADSR();
+    }
     makeSynths(count) {
         const synths = [];
-        const dist = new Tone.Distortion(this.distortionAmount).toDestination();
-        const volume = new Tone.Volume(-30);
+        const dist = new Tone.Distortion(this.distortionAmount);
+        const volume = new Tone.Volume(-5);
 
         for (let i = 0; i < count; i++) {
             let synth = new Tone.Synth({
@@ -140,7 +182,6 @@ class OscillatorStore {
     }
     createLoop(notes) {
         const synths = this.synths;
-        //const notes = this.props.barStore.notes;
         let beat = 0;
         Tone.Transport.scheduleRepeat((time) => {
             notes.forEach((row, rowIdx) => {
@@ -154,13 +195,23 @@ class OscillatorStore {
             beat = (beat + 1) % 8;
         }, "8n");
     }
-    setSythParams(params) {
-        this.synth.set(params);
+    onMouseDownEventHandler() {
+        this.synth.set({
+            envelope: this.adsr,
+            oscillator: {
+                type: this.waveType,
+            },
+        });
+        this.synth.triggerAttack("C4");
+    }
+    setButtonEventHandler() {
+        this.calculateADSR();
+        this.makeSynths(6);
     }
     setPartials(num) {
         this.numPartials = num;
         this.setWaveType(num);
-        this.setSythParams({
+        this.synth.set({
             oscillator: {
                 type: this.waveType,
             },
@@ -169,7 +220,7 @@ class OscillatorStore {
     setSelectedWave(idx) {
         this.selectedWave = this.waveForms[idx];
         this.waveType = `${this.selectedWave}${this.numPartials}`;
-        this.setSythParams({
+        this.synth.set({
             oscillator: {
                 type: this.waveType,
             },
@@ -183,9 +234,6 @@ class OscillatorStore {
         this.dist.set({
             distortion: amount,
         });
-    }
-    triggerAttack(note) {
-        this.synth.triggerAttack(note);
     }
     triggerRelease() {
         this.synth.triggerRelease();

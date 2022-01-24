@@ -9,5 +9,6 @@
 }
 
 .title {
-    margin-top: -2%;
+    position: fixed;
+    top: 4%;
 }

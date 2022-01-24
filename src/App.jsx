@@ -3,18 +3,17 @@ import { observer } from "mobx-react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import "./App.css";
+import Header from "./components/Header/Header";
 import Edit from "./pages/Edit";
 import List from "./pages/List";
 import EditOscillator from "./pages/EditOscillator";
 
-import OscillatorStore from "./stores/OscillatorStore";
 import RootStore from "./stores/RootStore";
-
-const oscillatorStore = new OscillatorStore();
 
 const rootStore = new RootStore();
 const barStore = rootStore.barStore;
 const pieceStore = rootStore.pieceStore;
+const oscillatorStore = rootStore.oscillatorStore;
 
 const stores = {
     oscillatorStore: oscillatorStore,
@@ -27,6 +26,7 @@ class App extends React.Component {
         return (
             <div className="App">
                 <h3 className="title">MuseBox</h3>
+                <Header pieceStore={pieceStore} />
                 <Routes>
                     <Route path="/edit" element={<Edit stores={stores} />}>
                         <Route
