@@ -14,13 +14,16 @@ class Bars extends React.Component {
     };
     uploadEventHandler = (e) => {
         if (this.props.pieceStore.name) {
-            this.props.pieceStore.postPieceAsync();
+            this.props.pieceStore.uploadPiece();
         } else {
             this.props.pieceStore.showPopup();
         }
     };
     okEventHandler = (e) => {
         this.props.pieceStore.showPopup();
+    };
+    uploadOkEventHandler = (e) => {
+        this.props.pieceStore.showUploadPopup();
     };
     addBarEventHandler = (e) => {
         this.props.pieceStore.addBar();
@@ -84,6 +87,19 @@ class Bars extends React.Component {
                             <button
                                 className="popupBttn"
                                 onClick={this.okEventHandler}
+                            >
+                                Ok
+                            </button>
+                        </div>
+                    </Popup>
+                )}
+                {this.props.pieceStore.uploadPopupView && (
+                    <Popup id="bars">
+                        Piece uploaded successfully.
+                        <div>
+                            <button
+                                className="popupBttn"
+                                onClick={this.uploadOkEventHandler}
                             >
                                 Ok
                             </button>

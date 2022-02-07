@@ -4,29 +4,24 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import "./TableTab.css";
 
-function TableTab({ pieceStore, barStore, oscillatorStore }) {
+function TableTab({ pieceStore, barStore, oscillatorStore, data, type }) {
+    //const { tabName } = useParams();
     const navigate = useNavigate();
-    const { type } = useParams();
     const pieceTab = type === "piece" ? true : false;
 
-    useEffect(() => {
-        if (type !== "piece" && pieceStore.pieceTab) {
-            pieceStore.toggleTabs();
-        }
-    });
-
     const onClickEvantHandler = (e, idx) => {
-        if (pieceStore.pieceTab) {
+        if (pieceTab) {
             pieceStore.setPiece(idx);
+            navigate(`/edit/${pieceStore.id}`);
         } else {
             pieceStore.reset();
             pieceStore.setBar(idx);
+            navigate("/create");
         }
-        navigate(`/edit/${pieceStore.id}`);
     };
     const newPieceEventHandler = (e) => {
         pieceStore.reset();
-        navigate("/edit/");
+        navigate("/create");
     };
     const deleteEventHandler = (e, idx) => {
         pieceStore.setDeleteIdx(idx);
@@ -36,7 +31,7 @@ function TableTab({ pieceStore, barStore, oscillatorStore }) {
         pieceStore.filterBars(idx);
     };
     const sortEventHandler = (e) => {
-        if (pieceStore.pieceTab) {
+        if (pieceTab) {
             pieceStore.sortPieces();
         } else {
             barStore.sortBars();
@@ -46,12 +41,6 @@ function TableTab({ pieceStore, barStore, oscillatorStore }) {
         barStore.resetViewBars();
     };
     const allPieces = pieceStore.allPieces;
-    let data;
-    if (pieceTab) {
-        data = allPieces;
-    } else {
-        data = barStore.viewBars;
-    }
     return (
         <div className="Table">
             <div className="tableHead">

@@ -26,7 +26,7 @@ class PieceStore {
     activeBarIdx = 0;
     allPieces = [];
     popupView = false;
-    pieceTab = true;
+    uploadPopupView = false;
     piecePlaying = false;
     deleteIdx = 0;
 
@@ -39,7 +39,7 @@ class PieceStore {
             activeBarIdx: observable,
             allPieces: observable,
             popupView: observable,
-            pieceTab: observable,
+            uploadPopupView: observable,
             piecePlaying: observable,
             deleteIdx: observable,
             setPieceId: action,
@@ -57,8 +57,8 @@ class PieceStore {
             playPiece: action,
             togglePiecePlay: action,
             showPopup: action,
+            showUploadPopup: action,
             setDeleteIdx: action,
-            toggleTabs: action,
         });
 
         this.rootStore = rootStore;
@@ -83,7 +83,45 @@ class PieceStore {
             name: this.name,
             bars_ids: this.barsIds,
         };
-        const response = await this.pieceService.post("Piece", pieceProps);
+        const { response, responseJson } = await this.pieceService.post(
+            "Piece",
+            pieceProps
+        );
+        return response;
+    };
+    putPieceAsync = async () => {
+        let ids = [];
+        for (let i = 0; i < this.bars.length; i++) {
+            this.changeActiveBar(i);
+
+            if (i + 1 > this.barsIds.length) {
+                const barObj = await this.rootStore.barStore.postBarAsync();
+                ids.push(barObj.id);
+            } else {
+                let id = this.barsIds[i];
+                const barObj = await this.rootStore.barStore.putBarAsync(id);
+                ids.push(id);
+            }
+        }
+        this.setBarIds(ids);
+        const pieceProps = {
+            id: this.id,
+            name: this.name,
+            bars_ids: this.barsIds,
+        };
+        const response = await this.pieceService.put("Piece", pieceProps);
+        return response;
+    };
+    uploadPiece = async () => {
+        let response;
+        if (this.id) {
+            response = await this.putPieceAsync();
+        } else {
+            response = await this.postPieceAsync();
+        }
+        if (response.ok) {
+            this.showUploadPopup();
+        }
     };
     deletePieceAsync = async (pieceIdx) => {
         const selectedPiece = this.allPieces[pieceIdx];
@@ -97,8 +135,8 @@ class PieceStore {
         const response = this.pieceService.delete("Piece", id);
         this.deletePieceView(pieceIdx);
     };
-    deletePieceAndBars() {
-        if (this.pieceTab) {
+    deletePieceAndBars(pieceTab) {
+        if (pieceTab) {
             this.deletePieceAsync(this.deleteIdx);
         } else {
             this.rootStore.barStore.deleteBarsAsync({
@@ -194,11 +232,11 @@ class PieceStore {
         this.activeBarIdx = idx;
         this.rootStore.barStore.notes = this.bars[this.activeBarIdx];
     }
-    toggleTabs() {
-        this.pieceTab = !this.pieceTab;
-    }
     showPopup() {
         this.popupView = !this.popupView;
+    }
+    showUploadPopup() {
+        this.uploadPopupView = !this.uploadPopupView;
     }
     playPiece() {
         let notesList = new Array(8 * this.bars.length);

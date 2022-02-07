@@ -5,10 +5,13 @@ import { observer } from "mobx-react";
 import "./Header.css";
 
 function Header({ pieceStore }) {
-    console.log("piece id", pieceStore.id);
     return (
         <div className="headerWrapper">
-            <Link to={`/edit/${pieceStore.id}`}>Edit</Link>
+            {pieceStore.id ? (
+                <Link to={`/edit/${pieceStore.id}`}>Editor</Link>
+            ) : (
+                <Link to="/create">Editor</Link>
+            )}
             <Link to="/list/piece">List</Link>
             <Link to="/oscillator">Oscillator</Link>
         </div>

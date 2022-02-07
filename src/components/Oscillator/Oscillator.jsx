@@ -16,7 +16,10 @@ function Oscillator({ oscillatorStore, pieceStore }) {
     };
     const setButtonEventHandler = (e) => {
         oscillatorStore.setButtonEventHandler();
-        navigate(`/edit/${pieceStore.id}`);
+        //navigate(`/edit/${pieceStore.id}`);
+        pieceStore.id
+            ? navigate(`/edit/${pieceStore.id}`)
+            : navigate("/create");
     };
     const partialsSliderEventHandler = (e) => {
         oscillatorStore.setPartials(e.target.value);

@@ -42,8 +42,16 @@ class BarStore {
     };
     postBarAsync = async () => {
         const barProps = { notes: this.notes };
-        const responseJson = this.pieceService.post("Bar", barProps);
+        const { response, responseJson } = await this.pieceService.post(
+            "Bar",
+            barProps
+        );
         return responseJson;
+    };
+    putBarAsync = async (id) => {
+        const barProps = { id: id, notes: this.notes };
+        const response = this.pieceService.put("Bar", barProps);
+        return response;
     };
     deleteBarsAsync = async ({ barId, barIdx }) => {
         if (barId === null) {

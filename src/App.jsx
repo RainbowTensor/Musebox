@@ -5,7 +5,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header/Header";
 import Edit from "./pages/Edit";
-import List from "./pages/List";
+import PieceList from "./pages/PieceList";
+import BarList from "./pages/BarList";
 import EditOscillator from "./pages/EditOscillator";
 
 import RootStore from "./stores/RootStore";
@@ -14,11 +15,13 @@ const rootStore = new RootStore();
 const barStore = rootStore.barStore;
 const pieceStore = rootStore.pieceStore;
 const oscillatorStore = rootStore.oscillatorStore;
+const tableStore = rootStore.oscillatorStore;
 
 const stores = {
     oscillatorStore: oscillatorStore,
     barStore: barStore,
     pieceStore: pieceStore,
+    tableStore: tableStore,
 };
 
 class App extends React.Component {
@@ -28,18 +31,24 @@ class App extends React.Component {
                 <h3 className="title">MuseBox</h3>
                 <Header pieceStore={pieceStore} />
                 <Routes>
-                    <Route path="/edit" element={<Edit stores={stores} />}>
-                        <Route
+                    <Route
+                        path="/edit/:pieceId"
+                        element={<Edit stores={stores} />}
+                    >
+                        {/*<Route
                             path=":pieceId"
                             element={<Edit stores={stores} />}
-                        />
+                        />*/}
                     </Route>
-                    <Route path="/list" element={<List stores={stores} />}>
-                        <Route
-                            path=":type"
-                            element={<List stores={stores} />}
-                        />
-                    </Route>
+                    <Route path="/create" element={<Edit stores={stores} />} />
+                    <Route
+                        path="/list/piece"
+                        element={<PieceList stores={stores} />}
+                    />
+                    <Route
+                        path="/list/bar"
+                        element={<BarList stores={stores} />}
+                    />
                     <Route
                         path="/oscillator"
                         element={<EditOscillator stores={stores} />}

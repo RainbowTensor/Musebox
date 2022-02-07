@@ -10,18 +10,23 @@ class Table extends React.Component {
         this.props.pieceStore.getPiecesAsync();
         this.props.barStore.getBarsAsync();
     }
-    onClickEventHandler = (e) => {
-        this.props.pieceStore.toggleTabs();
-    };
-    confirmEventHandler = (e) => {
+    //onClickEventHandler = (e) => {
+    //    this.props.pieceStore.toggleTabs();
+    //};
+    confirmEventHandler = (e, pieceTab) => {
         this.props.pieceStore.showPopup();
-        this.props.pieceStore.deletePieceAndBars();
+        this.props.pieceStore.deletePieceAndBars(pieceTab);
+        //this.props.tableStore.confirmDelete();
     };
     declineEventHandler = (e) => {
         this.props.pieceStore.showPopup();
+        //this.props.tableStore.showPopup();
     };
     render() {
-        const pieceTab = this.props.pieceStore.pieceTab;
+        const pieceTab = this.props.type === "piece" ? true : false;
+        const data = pieceTab
+            ? this.props.pieceStore.allPieces
+            : this.props.barStore.viewBars;
         return (
             <div className="tableWrapper">
                 <div className="Tabs">
@@ -29,7 +34,7 @@ class Table extends React.Component {
                         to="/list/piece"
                         className="Tab"
                         id={pieceTab ? "" : "active"}
-                        onClick={this.onClickEventHandler}
+                        //onClick={this.onClickEventHandler}
                     >
                         Piece
                     </Link>
@@ -37,7 +42,7 @@ class Table extends React.Component {
                         to="/list/bar"
                         className="Tab"
                         id={pieceTab ? "active" : ""}
-                        onClick={this.onClickEventHandler}
+                        //onClick={this.onClickEventHandler}
                     >
                         Bars
                     </Link>
@@ -46,6 +51,8 @@ class Table extends React.Component {
                     pieceStore={this.props.pieceStore}
                     barStore={this.props.barStore}
                     oscillatorStore={this.props.oscillatorStore}
+                    data={data}
+                    type={this.props.type}
                 />
                 {this.props.pieceStore.popupView && (
                     <Popup>
@@ -53,7 +60,11 @@ class Table extends React.Component {
                             ? "You are about to delete Piece and all of its Bars. Do you wish to proceed?"
                             : "You are about to delete a Bar. Do you wish to proceed?"}
                         <div>
-                            <button onClick={this.confirmEventHandler}>
+                            <button
+                                onClick={(e) =>
+                                    this.confirmEventHandler(e, pieceTab)
+                                }
+                            >
                                 Yes
                             </button>
                             <button onClick={this.declineEventHandler}>
